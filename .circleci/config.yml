@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    machine: true
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "7f:ff:a8:76:65:ae:85:bf:8f:10:ec:2a:bb:dd:dd:16"
+      - checkout
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run: docker build -t joseguzman21/circleci-cd:$CIRCLE_SHA1 .
+      - run: docker push joseguzman21/circleci-cd:$CIRCLE_SHA1
+      - run: ssh -o StrictHostKeyChecking=no root@147.182.173.130 "/bin/bash /root/docker/deploy.sh $CIRCLE_SHA1"
